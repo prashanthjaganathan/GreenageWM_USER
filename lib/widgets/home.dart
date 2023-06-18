@@ -55,7 +55,7 @@ class _HomeState extends State<Home> {
       );
 
       final results =
-          await conn.query('SELECT * FROM SIGNEDUP_USERS WHERE id = 3');
+          await conn.query('SELECT * FROM SIGNEDUP_USERS WHERE id = 1');
       for (var row in results) {
         print(row.toString());
         obj.setID = await row['id'];
