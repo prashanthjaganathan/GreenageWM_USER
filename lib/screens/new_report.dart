@@ -28,7 +28,6 @@ class _NewReportState extends State<NewReport> {
   void dispose() {
     super.dispose();
     _commentController.dispose();
-    photofile.delete();
   }
 
   @override
@@ -233,11 +232,12 @@ class _NewReportState extends State<NewReport> {
                                   // height: MediaQuery.of(context).size.height * 0.3,
                                 ),
                           onPressed: () async {
-                            final XFile? photo = await _picker.pickImage(
+                            _ximageFile = await _picker.pickImage(
                                 source: ImageSource.camera);
+
                             setState(() {
                               clicked = true;
-                              photofile = File(photo!.path);
+                              photofile = File(_ximageFile!.path);
                               // _ximageFile = photofile as XFile?;
                             });
                           },
@@ -300,9 +300,14 @@ class _NewReportState extends State<NewReport> {
                               _titleController.text.trim().isNotEmpty &&
                               latitude != "" &&
                               clicked) {
+                            Uint8List _imageAsBytes =
+                                await _ximageFile!.readAsBytes();
+                            String _base64 = base64.encode(_imageAsBytes);
+
                             Uint8List imageAsBytes =
                                 await photofile.readAsBytes();
-                            String _base64 = base64.encode(imageAsBytes);
+                            String base64ImageFile =
+                                base64.encode(imageAsBytes);
                             // dp = _ximageFile;
                             print(_base64);
 
@@ -311,7 +316,7 @@ class _NewReportState extends State<NewReport> {
                                 "${today.day}-${today.month}-${today.year}";
 
                             final _updateDb = await conn.query(
-                                'INSERT INTO REPORTS(`user_id`, `priority`, `latitude`, `longitude`, `image`,`comment`, `status`, `title`, `date`) VALUES (${obj.getID}, "$priorityLevel", $latitude, $longitude, "$base64", "$comments", "Submitted", "${_titleController.text}", CURDATE())');
+                                'INSERT INTO REPORTS(`user_id`, `priority`, `latitude`, `longitude`, `image`,`comment`, `status`, `title`, `date`) VALUES (${obj.getID}, "$priorityLevel", $latitude, $longitude, "$base64ImageFile", "$comments", "Submitted", "${_titleController.text}", CURDATE())');
                             print('Updated ${_updateDb.affectedRows} rows');
                             Fluttertoast.showToast(
                                 msg: "Report Submitted Successfully",

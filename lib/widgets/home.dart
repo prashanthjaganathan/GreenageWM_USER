@@ -54,15 +54,22 @@ class _HomeState extends State<Home> {
         ),
       );
 
+      final results =
+          await conn.query('SELECT * FROM SIGNEDUP_USERS WHERE id = 3');
+      for (var row in results) {
+        print(row.toString());
+        obj.setID = await row['id'];
+        obj.setName = await row['name'];
+        obj.setPhone = await row['phone_number'];
+        obj.setEmail = await row['email'];
+      }
+
       {
-        final results = await conn.query('SELECT * FROM USERS WHERE `id` = 2');
+        final results =
+            await conn.query('SELECT * FROM USERS WHERE `id` = ${obj.getID}');
         for (var row in results) {
           print(row.toString());
           // Setting up user data
-          obj.setID = await row['id'];
-          obj.setName = await row['Full_Name'];
-          obj.setPhone = row['Phone'].toString();
-          obj.setEmail = await row['Email'];
           obj.setAddress = row['Address'].toString();
           obj.setAddressName = row['Address_Name'].toString();
           obj.setRewardPoints = await row['Reward_Points'];
@@ -92,32 +99,6 @@ class _HomeState extends State<Home> {
           List<String> words = s.split(" ");
           pickupAddressBrief = words[words.length - 1];
         }
-        final getTotalReports = await conn.query(
-            'select COUNT(user_id) from REPORTS group by `user_id` having `user_id` = ${obj.getID}');
-        for (var row in getTotalReports) {
-          var temp = await row['COUNT(user_id)'];
-          totalReports = temp ?? 0;
-        }
-
-        final getSuccessReports = await conn.query(
-            'select COUNT(`user_id`) from REPORTS group by `user_id`, `status` having `user_id` = ${obj.getID} AND `status` = "Success"');
-        for (var row in getSuccessReports) {
-          var temp = await row['COUNT(status)'];
-          successfulReports = temp ?? 0;
-        }
-
-        final getPoints = await conn.query(
-            'select SUM(points_earned) from REPORTS group by `user_id` having `user_id` = ${obj.getID}');
-        for (var row in getPoints) {
-          var temp = await row['SUM(points_earned)'];
-          pointsEarnedByReports = temp ?? 0;
-        }
-
-        var myReports = await conn.query(
-            'select title, status, report_id from REPORTS where user_id = ${obj.getID}');
-        for (var row in myReports) {
-          reportHistory.add(row);
-        }
 
         var myPickups = await conn.query(
             'select pickup_id, disposal_size, address, total_bill, points_earned from PICKUPS where `user_id` = ${obj.getID}');
@@ -132,9 +113,13 @@ class _HomeState extends State<Home> {
           print(row[0]);
         }
 
-        var eduVideos = await conn.query('select title from EDU_VIDEOS');
+        var eduVideos = await conn.query('select * from EDU_VIDEOS');
         for (var row in eduVideos) {
-          educationalVideos.add(row['title'].toString());
+          EducationVideosData _edxObj = EducationVideosData();
+          _edxObj.title = await row['title'];
+          _edxObj.videoID = await row['link'];
+
+          educationalVideosData.add(_edxObj);
           print(row);
         }
       }

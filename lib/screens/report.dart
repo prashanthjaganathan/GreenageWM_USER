@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/data/report_series.dart';
 import 'package:flutter_application_1/data/reports_data.dart';
 import 'package:flutter_application_1/screens/new_report.dart';
+import 'package:flutter_application_1/widgets/home.dart';
 import 'package:flutter_application_1/widgets/report_history_chart.dart';
 import 'package:mysql1/mysql1.dart';
 
@@ -13,16 +16,88 @@ class Report extends StatefulWidget {
 }
 
 class _ReportState extends State<Report> {
+  int _totalReports = 0;
+
+  loadReportStats() async {
+    final getTotalReports = await conn.query(
+        'select COUNT(user_id) from REPORTS group by `user_id` having `user_id` = ${obj.getID}');
+    for (var row in getTotalReports) {
+      print(row);
+      var temp = await row['COUNT(user_id)'];
+      if (temp == _totalReports) return;
+      totalReports = _totalReports = temp ?? 0;
+    }
+
+    final getSuccessReports = await conn.query(
+        'select COUNT(`user_id`) from REPORTS group by `user_id`, `status` having `user_id` = ${obj.getID} AND `status` = "Success"');
+    for (var row in getSuccessReports) {
+      print(row);
+      var temp = await row['COUNT(status)'];
+      successfulReports = temp ?? 0;
+    }
+
+    final getPoints = await conn.query(
+        'select SUM(points_earned) from REPORTS group by `user_id` having `user_id` = ${obj.getID}');
+    for (var row in getPoints) {
+      print(row);
+      var temp = await row['SUM(points_earned)'];
+      pointsEarnedByReports = temp ?? 0;
+    }
+
+    var myReports = await conn.query(
+        'select title, status, report_id from REPORTS where user_id = ${obj.getID}');
+    if (_totalReports != 0) {
+      reportHistory.add(myReports[_totalReports - 1]);
+    }
+    for (var row in myReports) {
+      reportHistory.add(row);
+    }
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
 
-    Future.delayed(Duration.zero, () async {});
+    // Future.delayed(Duration.zero, () async {
+    //   final getTotalReports = await conn.query(
+    //       'select COUNT(user_id) from REPORTS group by `user_id` having `user_id` = ${obj.getID}');
+    //   for (var row in getTotalReports) {
+    //     print(row);
+    //     var temp = await row['COUNT(user_id)'];
+    //     totalReports = temp ?? 0;
+    //   }
+
+    //   final getSuccessReports = await conn.query(
+    //       'select COUNT(`user_id`) from REPORTS group by `user_id`, `status` having `user_id` = ${obj.getID} AND `status` = "Success"');
+    //   for (var row in getSuccessReports) {
+    //     print(row);
+    //     var temp = await row['COUNT(status)'];
+    //     successfulReports = temp ?? 0;
+    //   }
+
+    //   final getPoints = await conn.query(
+    //       'select SUM(points_earned) from REPORTS group by `user_id` having `user_id` = ${obj.getID}');
+    //   for (var row in getPoints) {
+    //     print(row);
+    //     var temp = await row['SUM(points_earned)'];
+    //     pointsEarnedByReports = temp ?? 0;
+    //   }
+
+    //   var myReports = await conn.query(
+    //       'select title, status, report_id from REPORTS where user_id = ${obj.getID}');
+    //   for (var row in myReports) {
+    //     reportHistory.add(row);
+    //   }
+    // });
     // WidgetsBinding.instance.addPostFrameCallback((_) => build(context));
   }
 
   @override
   Widget build(BuildContext context) {
+    Timer(const Duration(seconds: 10), () async {
+      await loadReportStats();
+    });
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 245, 242, 253),
       appBar: AppBar(title: const Center(child: Text("Reports Summary"))),

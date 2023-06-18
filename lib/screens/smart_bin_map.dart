@@ -63,7 +63,7 @@ class _SmartBinMapState extends State<SmartBinMap> {
   }
 
   void callFunc() async {
-    await getCurrentLocationAndData();
+    // await getCurrentLocationAndData();
     setState(() {});
   }
 
@@ -104,7 +104,7 @@ class _SmartBinMapState extends State<SmartBinMap> {
       await googleMapController.animateCamera(CameraUpdate.newCameraPosition(
           CameraPosition(
               target: LatLng(position.latitude, position.longitude),
-              zoom: 17)));
+              zoom: 18)));
 
       setState(() {
         googleMapController.animateCamera(CameraUpdate.newCameraPosition(
@@ -153,46 +153,60 @@ class _SmartBinMapState extends State<SmartBinMap> {
       Expanded(
           child: Padding(
         padding: const EdgeInsets.only(left: 10, right: 10),
-        child: ListView.builder(
+        child: ListView.separated(
+          separatorBuilder: ((context, index) {
+            return const Divider(
+              thickness: 2,
+            );
+          }),
           itemCount: binID.length,
           itemBuilder: (context, index) {
-            return Card(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: Image.asset(
-                        "assets/images/bin_marker.png",
-                        //fit: BoxFit.contain,
-                      ),
-                    ),
-                    Expanded(
-                        child: Center(
-                      child: Text(
-                        "\t\tSmart Bin # ${binID[index]}".toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 16,
-                        ),
-                      ),
-                    )),
-                    IconButton(
-                        onPressed: () => MapsLauncher.launchCoordinates(
-                            latitudes[index],
-                            longtitudes[index],
-                            'Greenage Waste Management - Smart Bin # ${binID[index]} '),
-                        icon: const Icon(
-                          Icons.directions_sharp,
-                          color: Colors.blue,
-                          size: 35,
-                        ))
-                  ],
+            return ListTile(
+              // tileColor: Colors.white,
+              leading: Image.asset(
+                "assets/images/bin_marker.png",
+                width: 25,
+
+                //fit: BoxFit.contain,
+              ),
+              title: Text(
+                "\t\tSmart Bin # ${binID[index]}",
+                style: const TextStyle(
+                  fontSize: 16,
                 ),
               ),
+              trailing: IconButton(
+                  onPressed: () => MapsLauncher.launchCoordinates(
+                      latitudes[index],
+                      longtitudes[index],
+                      'Greenage Waste Management - Smart Bin # ${binID[index]} '),
+                  icon: const Icon(
+                    Icons.directions_sharp,
+                    color: Colors.blue,
+                    size: 35,
+                  )),
             );
+
+            // Card(
+            //   child: Padding(
+            //     padding: const EdgeInsets.all(10.0),
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //       children: [
+            //         SizedBox(
+            //           width: 30,
+            //           height: 30,
+            //           child:
+            //         ),
+            //         Expanded(
+            //             child: Center(
+            //           child:
+            //         )),
+
+            //       ],
+            //     ),
+            //   ),
+            // );
           },
         ),
       )),
