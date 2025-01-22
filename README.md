@@ -67,3 +67,45 @@ Clone the repository to your local machine:
 
 ```bash
 git clone https://github.com/prashanthjaganathan/greenage-user-side.git
+```
+
+### Install Dependencies
+Navigate to the project directory and run:
+`flutter pub get`
+
+### Run the App
+To run the application:
+
+- Android:
+  `flutter run`
+  
+- iOS (macOS only):
+  `flutter run --target=ios`
+
+- Web:
+  `flutter run -d chrome`
+
+---
+
+## Project Structure
+
+Here’s a breakdown of the key folders and files in the project:
+```bash
+/greenage-admin-side
+    ├── android              # Android platform-specific code
+    ├── ios                  # iOS platform-specific code
+    ├── lib                  # Dart code (UI, logic, etc.)
+    ├── assets               # Images, icons, and other resources
+    ├── test                 # Unit and widget tests
+    ├── pubspec.yaml         # Flutter dependencies
+    ├── pubspec.lock         # Lock file for dependencies
+    ├── analysis_options.yaml # Linting and code analysis configuration
+    └── README.md            # This file
+```
+---
+
+## Acknowledgements
+
+- Centre for Innovation Incubation and Entrepreneurship (CIIE) at BMSCE for funding the implementation of this project and patent.
+- BMSCE’s Information Science & Engineering and Chemical Engineering departments for their collaborative efforts in creating this solution.
+
